@@ -7,6 +7,7 @@ name = "blog_os"
 version = "0.1.0"
 dependencies = [
  "bootloader",
+ "volatile",
 ]
 
 [[package]]
@@ -14,3 +15,9 @@ name = "bootloader"
 version = "0.9.23"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "b6e02311b16c9819e7c72866d379cdd3026c3b7b25c1edf161f548f8e887e7ff"
+
+[[package]]
+name = "volatile"
+version = "0.2.7"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "f6b06ad3ed06fef1713569d547cdbdb439eafed76341820fb0e0344f29a41945"

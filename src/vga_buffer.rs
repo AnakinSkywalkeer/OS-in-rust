@@ -69,7 +69,7 @@ impl Writer{
             }
         }
     }
-    fn write_string(&self , s:&str){
+    fn write_string(&mut self , s:&str){
         for byte in s.bytes(){
             match byte{
                 0x20..=0x7e | b'n'=>self.write_byte(byte),
@@ -85,7 +85,7 @@ pub fn print_something(){
         column_position:0,
         color_code:ColorCode::new(Color::Yellow,Color::Black),
         buffer:unsafe{
-            &mut *(0xb000 as *mut Buffer),
+            &mut *(0xb000 as *mut Buffer)
         }
     };
     writer.write_byte(b'H');
