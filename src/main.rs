@@ -2,19 +2,23 @@
 #![no_main]
 mod vga_buffer;
 use core::panic::PanicInfo;
-
+use core::fmt::Write;
 
 #[panic_handler]
-fn panic(_info:&PanicInfo)-> !{
+fn panic(info:&PanicInfo)-> !{
+    println!("{}",info);
     loop{}
 }
 
 
 #[no_mangle]
 pub extern "C" fn _start()-> !{
-    use core::fmt::Write;
-    vga_buffer::WRITER.lock().write_str("Hello again Gary this side").unwrap();
-    write!(vga_buffer::WRITER.lock(),"Some numbers {} {}",0.78,90).unwrap();
+     
+
+     println!("Hello world{}","!");
+     panic!("Hello world");
+
+
     loop{}
 }
 
