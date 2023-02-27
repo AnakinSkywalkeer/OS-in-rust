@@ -18,25 +18,18 @@ use core::arch::x86_64::_rdtsc;
 #[no_mangle]
 pub extern "C" fn _start() -> ! {
   
-    // for i in 1..8{
-    //     for j in 1..10{
-    //         print!(" ");
-    //     }
-    //    println!("");
-    // }
-    
+
 
     for i in 1..20{
         unsafe {
             let mut smth: u64 = _rdtsc();
             loop {
               let new_smth: u64 = _rdtsc();
-              print!("");
-              if  new_smth > (smth + 1500000) {
+              if  new_smth > (smth + 1500000000) {
                 WRITER.lock().putApple(i);
                 break;
               }
-              smth = new_smth;
+              let smth = new_smth;
             }
           }
     }
