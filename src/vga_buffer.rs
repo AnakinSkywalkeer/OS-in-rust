@@ -43,7 +43,7 @@ struct ScreenChar{
 }
 
 const  BUFFER_WIDTH :usize=80;
-const  BUFFER_HEIGHT:usize=25;
+const  BUFFER_HEIGHT:usize=90;
 
 #[repr(transparent)]
 struct Buffer{
@@ -58,7 +58,7 @@ pub struct Writer{
 lazy_static!{
     pub static ref WRITER:Mutex<Writer>=Mutex::new(Writer{
         column_position:0,
-        color_code:ColorCode::new(Color::Yellow,Color::Black),
+        color_code:ColorCode::new(Color::Red,Color::Black),
         buffer:unsafe{&mut *(0xb8000 as *mut Buffer)}
     });
 }
@@ -82,6 +82,16 @@ impl Writer{
             }
         }
     }
+    pub fn putApple(&mut self,a:usize){
+        let row=a;
+        let col=5;
+        let color_code=self.color_code;
+                self.buffer.chars[row][col].write(ScreenChar{
+                    ascii_character:b'O',
+                    color_code,
+                });
+        self.clear_row(a-1);
+    }
     fn write_string(&mut self , s:&str){
         for byte in s.bytes(){
             match byte{
@@ -101,7 +111,7 @@ impl Writer{
           self.clear_row(BUFFER_HEIGHT-1);
           self.column_position=0;
     }
-    fn clear_row(&mut self,row:usize){
+    pub fn clear_row(&mut self,row:usize){
         let blank=ScreenChar{
             ascii_character:b' ',
             color_code:self.color_code,
@@ -116,6 +126,7 @@ impl fmt::Write for Writer{
         self.write_string(s);
         Ok(())
     }
+
 }
 
 
