@@ -20,31 +20,22 @@ pub extern "C" fn _start() -> ! {
     println!("Hello world");
     blog_os::init(); // new
 
-    // // invoke a breakpoint exception
-    // x86_64::instructions::interrupts::int3(); // new
-  //   unsafe {
-  //     *(0xdeadbeef as *mut u64) = 42;
-  // };
-  fn stack_overflow() {
-    stack_overflow(); // for each recursion, the return address is pushed
-}
+    
 
-// trigger a stack overflow
-stack_overflow();
 
-    // for i in 1..20{
-    //     unsafe {
-    //         let mut smth: u64 = _rdtsc();
-    //         loop {
-    //           let new_smth: u64 = _rdtsc();
-    //           if  new_smth > (smth + 900000000) {
-    //             WRITER.lock().putApple(i);
-    //             break;
-    //           }
-    //           let smth = new_smth;
-    //         }
-    //       }
-    // }
+    for i in 1..20{
+        unsafe {
+            let mut smth: u64 = _rdtsc();
+            loop {
+              let new_smth: u64 = _rdtsc();
+              if  new_smth > (smth + 900000000) {
+                WRITER.lock().putApple(i);
+                break;
+              }
+              let smth = new_smth;
+            }
+          }
+    }
     
 
     #[cfg(test)]

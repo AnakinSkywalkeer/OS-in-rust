@@ -6,7 +6,7 @@ edition = "2021"
 
 
 [dependencies]
-
+pic8259 = "0.10.1"
 bootloader = "0.9.8"
 lazy_static = { version = "1.4.0", features = ["spin_no_std"] }
 spin = "0.5.2"
@@ -24,5 +24,7 @@ test-timeout=5
 [[test]]
 name="should_panic"
 harness=false
-
+[[test]]
+name = "stack_overflow"
+harness = false
 
