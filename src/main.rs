@@ -23,25 +23,25 @@ pub extern "C" fn _start() -> ! {
     
 
 
-    for i in 1..20{
-        unsafe {
-            let mut smth: u64 = _rdtsc();
-            loop {
-              let new_smth: u64 = _rdtsc();
-              if  new_smth > (smth + 900000000) {
-                WRITER.lock().putApple(i);
-                break;
-              }
-              let smth = new_smth;
-            }
-          }
-    }
+    // for i in 1..20{
+    //     unsafe {
+    //         let mut smth: u64 = _rdtsc();
+    //         loop {
+    //           let new_smth: u64 = _rdtsc();
+    //           if  new_smth > (smth + 900000000) {
+    //             WRITER.lock().putApple(i);
+    //             break;
+    //           }
+    //           let smth = new_smth;
+    //         }
+    //       }
+    // }
     
 
     #[cfg(test)]
     tes();
 
-    loop {}
+    blog_os::hlt_loop();
 }
 
 /// This function is called on panic.
@@ -49,7 +49,7 @@ pub extern "C" fn _start() -> ! {
 #[panic_handler]
 fn panic(info: &PanicInfo) -> ! {
     println!("{}", info);
-    loop {}
+    blog_os::hlt_loop();
 }
 fn idk(){
   unsafe{
