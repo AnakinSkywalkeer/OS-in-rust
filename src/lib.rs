@@ -82,4 +82,76 @@ pub fn hlt_loop() -> ! {
         x86_64::instructions::hlt();
     }
 }
-
+//--------------------------------------
+#[derive(Debug, Clone, Copy)]
+pub enum Direction {
+    LEFT,
+    RIGHT,
+    UP,
+    DOWN,
+}
+#[derive(Debug, Clone, Copy)]
+pub struct Snake {
+    direction: Direction,
+    row: u32,
+    col: u32,
+}
+use pc_keyboard::{layouts, DecodedKey, HandleControl, Keyboard, ScancodeSet1};
+use spin::Mutex;
+use x86_64::instructions::port::Port;
+use vga_buffer::WRITER;
+use vga_buffer::Writer;
+use pc_keyboard::KeyCode;
+impl Snake {
+    pub fn make_snake() -> Snake {
+        let snake: Snake = Snake {
+            direction: Direction::RIGHT,
+            row: 1,
+            col: 0,
+        };
+        snake
+    }
+    
+    pub fn dir(&mut self, a: DecodedKey){
+        match a {
+            DecodedKey::RawKey(key) if key == KeyCode::ArrowLeft => {
+                use core::arch::x86_64::_rdtsc;
+                unsafe {
+                    let mut smth: u64 = _rdtsc();
+                    loop {
+                      let new_smth: u64 = _rdtsc();
+                      if  new_smth > (smth + 900000000) {
+                        WRITER.lock().putApple();
+                        break;
+                      }
+                      let smth = new_smth;
+                    }
+                  }
+            },
+            DecodedKey::RawKey(key) if key == KeyCode::ArrowRight =>{
+                use core::arch::x86_64::_rdtsc;
+                unsafe {
+                    let mut smth: u64 = _rdtsc();
+                   
+                    loop {
+                      let new_smth: u64 = _rdtsc();
+                      if  new_smth > (smth + 900000000) {
+                        WRITER.lock().opp();
+                        break;
+                      }
+                      let smth = new_smth;
+                    }
+                  }
+            },
+            DecodedKey::Unicode(character) => self.direction=self.direction,
+           _=>self.direction=self.direction,
+        }
+    }
+    pub fn get(&mut self)->Direction{
+        self.direction
+    }
+}
+use lazy_static::lazy_static;
+lazy_static!{
+    pub static ref SNAKE:Mutex<Snake>=Mutex::new(Snake::make_snake());
+}

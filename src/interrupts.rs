@@ -1,12 +1,24 @@
-
+#![feature(abi_x86_interrupt)]
+use pc_keyboard::KeyCode;
 use x86_64::structures::idt::{InterruptDescriptorTable, InterruptStackFrame};
+use crate::Snake;
 use crate::println;
 use lazy_static::lazy_static;
 use core::arch::asm;
 use pic8259::ChainedPics;
 use spin;
 use crate::print;
+use crate::vga_buffer;
 use crate::gdt;
+
+use pc_keyboard::{layouts, DecodedKey, HandleControl, Keyboard, ScancodeSet1};
+use spin::Mutex;
+use x86_64::instructions::port::Port;
+use vga_buffer::WRITER;
+use vga_buffer::Writer;
+
+
+
 lazy_static! {
     static ref IDT: InterruptDescriptorTable = {
         let mut idt = InterruptDescriptorTable::new();
@@ -87,7 +99,8 @@ extern  "x86-interrupt" fn keyboard_interrupt_handler(
     use pc_keyboard::{layouts, DecodedKey, HandleControl, Keyboard, ScancodeSet1};
     use spin::Mutex;
     use x86_64::instructions::port::Port;
-
+    use vga_buffer::WRITER;
+    use vga_buffer::Writer;   
     lazy_static! {
         static ref KEYBOARD: Mutex<Keyboard<layouts::Us104Key, ScancodeSet1>> =
             Mutex::new(Keyboard::new(layouts::Us104Key, ScancodeSet1,
@@ -101,12 +114,22 @@ extern  "x86-interrupt" fn keyboard_interrupt_handler(
     if let Ok(Some(key_event)) = keyboard.add_byte(scancode) {
         if let Some(key) = keyboard.process_keyevent(key_event) {
             match key {
+                DecodedKey::Unicode(character) if character == (8) as char =>WRITER.lock().backspace(),
                 DecodedKey::Unicode(character) => print!("{}", character),
-                DecodedKey::RawKey(key) => print!("{:?}", key),
+                DecodedKey::RawKey(key)if key==KeyCode::ArrowLeft || key==KeyCode::ArrowRight=> {crate::SNAKE.lock().dir(DecodedKey::RawKey(key));},//arrows //print!("{:?}", key)//crate::SNAKE.lock().dir(DecodedKey::RawKey(key)) 
+                _=>print!("hello"),//crate::SNAKE.lock().dir(key)
             }
+            //print!("{:?}",crate::SNAKE.lock().get())
         }
     }
     unsafe{
         PICS.lock().notify_end_of_interrupt(InterruptIndex::Keyboard.as_u8());
     }
 }
+
+
+
+
+//-------------------
+
+

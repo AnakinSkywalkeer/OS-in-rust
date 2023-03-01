@@ -1,3 +1,4 @@
+
 use volatile::Volatile;
 use core::fmt;
 use lazy_static::lazy_static;
@@ -8,6 +9,9 @@ use spin::Mutex;
 #[allow(dead_code)]
 #[derive(Debug,Clone,Copy,PartialEq,Eq)]
 #[repr(u8)]
+
+
+
 pub enum Color{
     Black=0,
     Blue=1,
@@ -54,6 +58,7 @@ pub struct Writer{
     column_position:usize,
     color_code:ColorCode,
     buffer:&'static mut Buffer,
+    // row_position:usize,
 }
 lazy_static!{
     pub static ref WRITER:Mutex<Writer>=Mutex::new(Writer{
@@ -82,15 +87,51 @@ impl Writer{
             }
         }
     }
-    pub fn putApple(&mut self,a:usize){
-        let row=a;
-        let col=5;
+    pub fn putApple(&mut self){
+        let row=2;
+        // let col=a;
         let color_code=self.color_code;
-                self.buffer.chars[row][col].write(ScreenChar{
+                self.buffer.chars[row][self.column_position].write(ScreenChar{
+                    ascii_character:b'T',
+                    color_code,
+                });
+        // self.clear_row(a-1);
+        // self.buffer.chars[row][self.column_position+1].write(ScreenChar{
+        //     ascii_character:b' ',
+        //     color_code,
+        // });
+        self.column_position+=1;
+    }
+    pub fn  opp(&mut self){
+        let row=2;
+        // let col=a;
+        let color_code=self.color_code;
+                self.buffer.chars[row][self.column_position].write(ScreenChar{
                     ascii_character:b'O',
                     color_code,
                 });
-        self.clear_row(a-1);
+        // 
+        // self.buffer.chars[row][self.column_position-1].write(ScreenChar{
+        //     ascii_character:b' ',
+        //     color_code,
+        // });
+        self.column_position+=1;
+    }
+    pub fn um(&mut self){
+        self.column_position+=1;
+    }
+    pub fn backspace(&mut self){
+        let color_code=self.color_code;
+        if self.column_position!=0{
+        self.buffer.chars[BUFFER_HEIGHT-1][self.column_position-1].write(ScreenChar{
+            ascii_character:b' ',
+            color_code,
+        });
+        self.column_position-=1;
+    }else{
+        self.buffer.chars[BUFFER_HEIGHT-2][BUFFER_WIDTH-1].write(ScreenChar { ascii_character: b' ', color_code });
+    }
+       
     }
     fn write_string(&mut self , s:&str){
         for byte in s.bytes(){
@@ -111,7 +152,7 @@ impl Writer{
           self.clear_row(BUFFER_HEIGHT-1);
           self.column_position=0;
     }
-    fn clear_row(&mut self,row:usize){
+    pub fn clear_row(&mut self,row:usize){
         let blank=ScreenChar{
             ascii_character:b' ',
             color_code:self.color_code,
